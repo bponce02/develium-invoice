@@ -1,9 +1,0 @@
-services:
-  tailwind:
-    build:
-      context: .
-      dockerfile: ./node-app/Dockerfile
-    volumes:
-      - ./static:/app/static
-      - ./templates:/app/templates
-      - ./css:/app/css
