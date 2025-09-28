@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #{{ invoice.number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0.75in;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            margin: 0;
+            padding: 20pt;
+            color: #333;
+            background: white;
+        }
+        
+        .invoice-container {
+            width: 100%;
+            max-width: 7in;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30pt;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 10pt;
+        }
+        
+        .logo {
+            width: 40pt;
+            height: 40pt;
+            background: linear-gradient(135deg, #666, #555);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20pt;
+            font-weight: bold;
+        }
+        
+        .invoice-title {
+            font-size: 36pt;
+            font-weight: 300;
+            color: #666;
+            margin: 0;
+            letter-spacing: 2pt;
+        }
+        
+        .company-name {
+            text-align: right;
+            font-size: 18pt;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+        
+        .invoice-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20pt;
+            margin-bottom: 30pt;
+        }
+        
+        .info-section h4 {
+            color: #666;
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0 0 5pt 0;
+            letter-spacing: 1pt;
+        }
+        
+        .info-section p {
+            margin: 2pt 0;
+            font-size: 10pt;
+            line-height: 1.3;
+        }
+        
+        .company-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30pt;
+            gap: 30pt;
+        }
+        
+        .bill-to {
+            flex: 1;
+        }
+        
+        .bill-to h4 {
+            color: #666;
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0 0 8pt 0;
+            letter-spacing: 1pt;
+        }
+        
+        .bill-to p {
+            margin: 2pt 0;
+            font-size: 11pt;
+            line-height: 1.3;
+        }
+        
+        .supplier-info {
+            flex: 1;
+            text-align: right;
+        }
+        
+        .supplier-info h3 {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #333;
+            margin: 0 0 8pt 0;
+        }
+        
+        .supplier-info p {
+            margin: 2pt 0;
+            font-size: 11pt;
+            line-height: 1.3;
+        }
+        
+        .services-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20pt;
+        }
+        
+        .services-table th {
+            background-color: #666;
+            color: white;
+            padding: 12pt 8pt;
+            text-align: left;
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5pt;
+        }
+        
+        .services-table th:last-child {
+            text-align: right;
+        }
+        
+        .services-table td {
+            padding: 12pt 8pt;
+            border-bottom: 1pt solid #e0e0e0;
+            font-size: 10pt;
+        }
+        
+        .services-table td:last-child {
+            text-align: right;
+            font-weight: bold;
+        }
+        
+        .service-description {
+            font-weight: bold;
+            margin-bottom: 3pt;
+        }
+        
+        .service-details {
+            font-size: 9pt;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .totals-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20pt;
+        }
+        
+        .totals {
+            width: 250pt;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8pt 0;
+            border-bottom: 1pt solid #e0e0e0;
+        }
+        
+        .total-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 12pt;
+            color: #666;
+        }
+        
+        .grand-total {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #666;
+            text-align: right;
+            margin: 20pt 0;
+        }
+        
+        .footer {
+            margin-top: 40pt;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30pt;
+        }
+        
+        .footer h4 {
+            color: #666;
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0 0 8pt 0;
+            letter-spacing: 1pt;
+        }
+        
+        .footer p {
+            margin: 2pt 0;
+            font-size: 9pt;
+            line-height: 1.4;
+        }
+        
+        .thank-you {
+            text-align: center;
+            margin-top: 30pt;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if invoice %}
+    <div class="invoice-container">
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">D</div>
+                <h1 class="invoice-title">INVOICE</h1>
+            </div>
+        </div>
+
+        <div class="invoice-info">
+            <div class="info-section">
+                <h4>Invoice #</h4>
+                <p>{{ invoice.number|stringformat:"04d" }}</p>
+            </div>
+            <div class="info-section">
+                <h4>Date of Issue</h4>
+                <p>{{ invoice.timestamp|date:"m/d/Y" }}</p>
+            </div>
+        </div>
+
+        <div class="company-info">
+            <div class="bill-to">
+                <h4>Bill To</h4>
+                <p><strong>{{ invoice.client.name }}</strong></p>
+                <p>{{ invoice.client.address }}</p>
+                <p>{{ invoice.client.city }}, {{ invoice.client.state }}</p>
+                <p>{{ invoice.client.zip_code }}</p>
+                <p>{{ invoice.client.email }}</p>
+            </div>
+
+            <div class="supplier-info">
+                <h3>{{ invoice.supplier.name|default:"DEVELIUM" }}</h3>
+                <p>{{ invoice.supplier.address|default:"456 Developer Ave" }}</p>
+                <p>{{ invoice.supplier.city|default:"Tech City" }}, {{ invoice.supplier.state|default:"CA" }}, {{ invoice.supplier.zip_code|default:"54321" }}</p>
+                <p>{{ invoice.supplier.phone|default:"(555) 987-6543" }}</p>
+                <p>{{ invoice.supplier.email|default:"hello@develium.com" }}</p>
+            </div>
+        </div>
+
+        <table class="services-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Unit Cost</th>
+                    <th>Qty</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="service-description">Professional Development Services</div>
+                    </td>
+                    <td>${{ invoice.rate }}</td>
+                    <td>{{ invoice.hours }}</td>
+                    <td>${{ invoice.total }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="grand-total">${{ invoice.total }}</div>
+
+        <div class="footer">
+            <div>
+                <h4>Payment Instructions</h4>
+                <p>Please contact us for payment options.</p>
+            </div>
+
+            <div class="thank-you">
+                <p>THANK YOU FOR YOUR BUSINESS!</p>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="invoice-container">
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">D</div>
+                <h1 class="invoice-title">INVOICE</h1>
+            </div>
+        </div>
+        <p>No Invoice Data Available - Please create an invoice first.</p>
+    </div>
+    {% endif %}
+</body>
+</html>
